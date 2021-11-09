@@ -8,26 +8,26 @@ using Microsoft.EntityFrameworkCore;
 using CW1_WebAppUI_7784.Data;
 using CW1_WebAppUI_7784.Models;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace CW1_WebAppUI_7784.Controllers
 {
-    public class ProductsController : Controller
+    public class ProductController : Controller
     {
         private readonly CW1_WebAppUI_7784Context _context;
-        private string Baseurl = "https://localhost:5001/";
+        private string Baseurl = "https://localhost:44368/";
 
-        public ProductsController(CW1_WebAppUI_7784Context context)
+        public ProductController(CW1_WebAppUI_7784Context context)
         {
             _context = context;
         }
 
-        // GET: Products
+        // GET: Product
         public async Task<IActionResult> Index()
         {
             //Hosted web API REST Service base url
-            string Baseurl = "https://localhost:5001/";
+            string Baseurl = "https://localhost:44368/";
             List<Product> ProductInfo = new List<Product>();
             using (var client = new HttpClient())
             {
@@ -47,10 +47,10 @@ namespace CW1_WebAppUI_7784.Controllers
             }
         }
 
-        // GET: Products/Details/5
+        // GET: Product/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            string Baseurl = "https://localhost:5001/";
+            string Baseurl = "https://localhost:44368/";
             Product products = null;
             using (var client = new HttpClient())
             {
@@ -70,7 +70,7 @@ namespace CW1_WebAppUI_7784.Controllers
             return View(products);
         }
 
-        // GET: Products/Create
+        // GET: Product/Create
         public async Task<IActionResult> CreateAsync()
         {
             List<Category> ProductInfo = new List<Category>();
@@ -89,12 +89,13 @@ namespace CW1_WebAppUI_7784.Controllers
                     ProductInfo = JsonConvert.DeserializeObject<List<Category>>(Response);
                 }
             }
-            ViewData["ProductCategoryId"] = new SelectList(ProductInfo, "Id", "Name");
+            ViewData["ProductCategory"] = new SelectList(ProductInfo, "Id", "Name");
             return View();
         }
 
-
-        // POST: Products/Create
+        // POST: Product/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,ProductCategoryId")] Product product)
@@ -105,7 +106,7 @@ namespace CW1_WebAppUI_7784.Controllers
                 using (var client = new HttpClient())
                 {
                     var randomNumber = new Random();
-                    product.Id = randomNumber.Next(150);
+                    product.Id = randomNumber.Next(300);
                     client.BaseAddress = new Uri(Baseurl);
                     var postTask = await client.PostAsJsonAsync<Product>("api/Product", product);
                     if (postTask.IsSuccessStatusCode)
@@ -117,14 +118,14 @@ namespace CW1_WebAppUI_7784.Controllers
             return View(product);
         }
 
-        // GET: Products/Edit/5
+        // GET: Product/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            List<Category> ProductInfo = new List<Category>();
+            List<Category> cats = new List<Category>();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(Baseurl);
@@ -137,7 +138,7 @@ namespace CW1_WebAppUI_7784.Controllers
                     //Storing the response details recieved from web api
                     var Response = Res.Content.ReadAsStringAsync().Result;
                     //Deserializing the response recieved from web api and storing into the Product list
-                    ProductInfo = JsonConvert.DeserializeObject<List<Category>>(Response);
+                    cats = JsonConvert.DeserializeObject<List<Category>>(Response);
                 }
             }
 
@@ -156,7 +157,7 @@ namespace CW1_WebAppUI_7784.Controllers
                 else
                     ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
             }
-            ViewData["ProductCategoryId"] = new SelectList(ProductInfo, "Id", "Name", product.ProductCategory);
+            ViewData["ProductCategory"] = new SelectList(cats, "Id", "Name", product.ProductCategoryId);
             if (product == null)
             {
                 return NotFound();
@@ -164,8 +165,9 @@ namespace CW1_WebAppUI_7784.Controllers
             return View(product);
         }
 
-
-        // POST: Products/Edit/5
+        // POST: Product/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,ProductCategoryId")] Product product)
@@ -221,10 +223,7 @@ namespace CW1_WebAppUI_7784.Controllers
             return View(product);
         }
 
-
-
-        // GET: Products/Delete/5
-        //The function 
+        // GET: Product/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -252,12 +251,12 @@ namespace CW1_WebAppUI_7784.Controllers
             return View(product);
         }
 
-        // POST: Products/Delete/5
+        // POST: Product/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            string Baseurl = "https://localhost:5001/";
+            string Baseurl = "https://localhost:44368/";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(Baseurl);
@@ -278,6 +277,5 @@ namespace CW1_WebAppUI_7784.Controllers
         {
             return _context.Product.Any(e => e.Id == id);
         }
-
     }
 }
