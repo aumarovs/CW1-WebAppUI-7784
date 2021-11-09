@@ -1,0 +1,20 @@
+version: 0.0
+os: windows
+files:
+  - source: CW1-WebAppUI-7784/bin/net5.0/publish
+    destination: C:\webApps7784\CW1-WebAppUI-7784
+  - source: deployscripts/deletewebsite.ps1
+    destination: c:\temp
+  - source: deployscripts/installwebsite.ps1
+    destination: c:\temp
+  - source: deployscripts/deletewebsite.bat
+    destination: c:\temp
+  - source: deployscripts/installwebsite.bat
+    destination: c:\temp
+hooks:
+  ApplicationStop:
+  #    - location: deployscripts/deletewebsite.bat
+  #      timeout: 300
+  ApplicationStart:
+  #   - location: deployscripts/installwebsite.bat
+  #     timeout: 300
